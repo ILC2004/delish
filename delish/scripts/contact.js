@@ -1,52 +1,75 @@
-// contact.js - handle and validate the Contact Us form
-
 document.addEventListener('DOMContentLoaded', function () {
-  const contactForm = document.getElementById('contact-form');
+  console.log("✅ reservation.js loaded");
 
-  if (contactForm) {
-    contactForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
+  const tables = document.querySelectorAll('.table[data-available="true"]');
+  const tableInput = document.getElementById('table');
+  const reservationForm = document.getElementById('reservation-form');
 
-      // Get values
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const subject = document.getElementById('subject').value.trim();
-      const message = document.getElementById('message').value.trim();
-
-      // Validate fields
-      if (!name || !email || !subject || !message) {
-        alert('Please fill out all fields.');
-        return;
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-
-      // Send to backend
-      try {
-        const response = await fetch('http://localhost/delish/contact.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, subject, message })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert('✅ Message sent successfully!');
-          contactForm.reset();
-        } else {
-          alert('❌ Failed to send message. Please try again.');
-          console.error(result.error); // optional: view error in console
-        }
-      } catch (error) {
-        alert('❌ Something went wrong. Check your internet or server.');
-        console.error('Error:', error);
-      }
+  // Table selection
+  tables.forEach(table => {
+    table.addEventListener('click', function () {
+      const tableNumber = this.getAttribute('data-table');
+      tableInput.value = tableNumber;
+      console.log("🪑 Selected table:", tableNumber);
     });
-  }
+  });
+
+  // Form submission
+  reservationForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    console.log("📨 Form submission started");
+
+    const table = tableInput.value.trim();
+    const date = document.getElementById('date').value.trim();
+    const time = document.getElementById('time').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (!table || !date || !time || !name || !email || !phone) {
+      alert("⚠️ Please fill out all fields.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("⚠️ Invalid email address.");
+      return;
+    }
+
+    const phoneRegex = /^\d{10,}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("⚠️ Invalid phone number.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("table", table);
+    formData.append("date", date);
+    formData.append("time", time);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("phone", phone);
+
+    try {
+      const response = await fetch("https://delish-l1.onrender.com/reservation.php", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await response.json();
+      console.log("📥 Server response:", result);
+
+      if (result.success) {
+        alert(`✅ Booking confirmed for Table ${table} on ${date} at ${time}.`);
+        reservationForm.reset();
+      } else {
+        alert("❌ Booking failed. Please try again later.");
+        console.error("Server error:", result.error);
+      }
+    } catch (err) {
+      alert("❌ Could not connect to the server.");
+      console.error("Network error:", err);
+    }
+  });
 });
