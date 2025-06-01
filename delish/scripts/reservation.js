@@ -52,10 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
     formData.append("phone", phone);
 
     try {
-      const response = await fetch("reservation.php", {
+      const response = await fetch("https://delish-l1.onrender.com/reservation.php", {
         method: "POST",
         body: formData
-        // 🚫 Do NOT add headers like Content-Type
       });
 
       const result = await response.json();
