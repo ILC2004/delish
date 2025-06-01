@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
     formData.append("phone", phone);
 
     try {
-      const response = await fetch("https://delish-l1.onrender.com/reservation.php", {
+      const response = await fetch("https://delish.onrender.com/reservation.php", {
         method: "POST",
         body: formData
       });
