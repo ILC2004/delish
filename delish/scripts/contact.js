@@ -1,75 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
-  console.log("✅ reservation.js loaded");
+  const contactForm = document.getElementById('contact-form');
 
-  const tables = document.querySelectorAll('.table[data-available="true"]');
-  const tableInput = document.getElementById('table');
-  const reservationForm = document.getElementById('reservation-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-  // Table selection
-  tables.forEach(table => {
-    table.addEventListener('click', function () {
-      const tableNumber = this.getAttribute('data-table');
-      tableInput.value = tableNumber;
-      console.log("🪑 Selected table:", tableNumber);
-    });
-  });
+      // Validate fields
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const subject = document.getElementById('subject').value.trim();
+      const message = document.getElementById('message').value.trim();
 
-  // Form submission
-  reservationForm.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    console.log("📨 Form submission started");
-
-    const table = tableInput.value.trim();
-    const date = document.getElementById('date').value.trim();
-    const time = document.getElementById('time').value.trim();
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-
-    if (!table || !date || !time || !name || !email || !phone) {
-      alert("⚠️ Please fill out all fields.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("⚠️ Invalid email address.");
-      return;
-    }
-
-    const phoneRegex = /^\d{10,}$/;
-    if (!phoneRegex.test(phone)) {
-      alert("⚠️ Invalid phone number.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("table", table);
-    formData.append("date", date);
-    formData.append("time", time);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("phone", phone);
-
-    try {
-      const response = await fetch("https://delish-l1.onrender.com/reservation.php", {
-        method: "POST",
-        body: formData
-      });
-
-      const result = await response.json();
-      console.log("📥 Server response:", result);
-
-      if (result.success) {
-        alert(`✅ Booking confirmed for Table ${table} on ${date} at ${time}.`);
-        reservationForm.reset();
-      } else {
-        alert("❌ Booking failed. Please try again later.");
-        console.error("Server error:", result.error);
+      if (!name || !email || !subject || !message) {
+        alert('Please fill out all fields.');
+        return;
       }
-    } catch (err) {
-      alert("❌ Could not connect to the server.");
-      console.error("Network error:", err);
-    }
-  });
+
+      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      // Prepare FormData
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('subject', subject);
+      formData.append('message', message);
+
+      try {
+        const response = await fetch('https://delish-l1.onrender.com/contact.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const text = await response.text();
+        alert('✅ Message sent successfully!');
+        contactForm.reset();
+      } catch (error) {
+        alert('❌ Failed to send message.');
+        console.error('Error:', error);
+      }
+    });
+  }
 });
