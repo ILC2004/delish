@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const tableInput = document.getElementById('table');
   const reservationForm = document.getElementById('reservation-form');
 
-  // Table selection
   tables.forEach(table => {
     table.addEventListener('click', function () {
       const tableNumber = this.getAttribute('data-table');
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Form submission
   reservationForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     console.log("📨 Form submission started");
@@ -52,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     formData.append("phone", phone);
 
     try {
-      const response = await fetch("https://delish.onrender.com/reservation.php", {
+      const response = await fetch("https://delish-rc5h.onrender.com/reservation.php", {
         method: "POST",
         body: formData
       });
