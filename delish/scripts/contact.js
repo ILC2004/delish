@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
       formData.append('message', message);
 
       try {
-        const response = await fetch('https://delish-l1.onrender.com/contact.php', {
+        const response = await fetch('https://delish-4.onrender.com/contact.php', {
           method: 'POST',
           body: formData
         });
